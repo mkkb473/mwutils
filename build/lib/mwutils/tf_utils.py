@@ -1,0 +1,38 @@
+import time
+import tensorflow as tf
+if tf.__version__[0] == 1:
+    SessionRunArgs = tf.train.SessionRunArgs
+    SessionRunHook = tf.train.SessionRunHook
+else:
+    SessionRunArgs = tf.compat.v1.train.SessionRunArgs
+    SessionRunHook = tf.estimator.SessionRunHook
+
+NONE_INDEX = -333
+
+
+class LoggerHook(SessionRunHook):
+    """Logs loss and runtime."""
+
+    def set_run(self, run, loss, phase="train"):
+        self.run = run
+        self.phase = phase
+        self.loss = loss
+        run.init_ml()
+        run.start_ml()
+
+    def begin(self):
+        self._step = -1
+
+    def before_run(self, run_context):
+        self._step += 1
+        # Asks for loss value.
+        return SessionRunArgs(self.loss)
+
+    def after_run(self, run_context, run_values):
+        loss_value = run_values.results
+        self.run.log_ml(step=self._step, loss=loss_value.astype(
+            float), phase=self.phase)
+        #print("DEBUG: STEP {}, LOSS VALUE: {}".format(self._step, loss_value))
+
+    def end(self, session):
+        self.run.conclude()
