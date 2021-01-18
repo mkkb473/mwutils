@@ -21,18 +21,18 @@ class LoggerHook(SessionRunHook):
         run.start_ml()
 
     def begin(self):
-        self._step = -1
+        self._epch = -1
 
     def before_run(self, run_context):
-        self._step += 1
+        self._epoch += 1
         # Asks for loss value.
         return SessionRunArgs(self.loss)
 
     def after_run(self, run_context, run_values):
         loss_value = run_values.results
-        self.run.log_ml(step=self._step, loss=loss_value.astype(
+        self.run.log_ml(epoch=self._epoch, loss=loss_value.astype(
             float), phase=self.phase)
-        #print("DEBUG: STEP {}, LOSS VALUE: {}".format(self._step, loss_value))
+        #print("DEBUG: EPOCH {}, LOSS VALUE: {}".format(self._epoch, loss_value))
 
     def end(self, session):
         self.run.conclude()
