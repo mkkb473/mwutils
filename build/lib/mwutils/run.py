@@ -210,6 +210,7 @@ class Run():
                     warnings.warn(msg)
                 else:
                     print("abort remote call succeed. resp:", r)
+                    break
         self.started = False
         self.run_id = "aborted"
 
@@ -245,6 +246,7 @@ class Run():
                     warnings.warn(msg)
                 else:
                     print("conclude remote call succeed. resp:", r)
+                    break
         self.started = False
         self.run_id = "concluded"
 
