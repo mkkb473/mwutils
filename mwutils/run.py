@@ -99,6 +99,7 @@ class Run():
         self.logs_remote_path = remote_path + '/logs' if remote_path else ''
         self.conclude_remote_path = remote_path + '/conclude'
         self.remote_path = remote_path
+        self.abort_remote_path = remote_path + "/abort"
         self.buffer_all_logs = buffer_all_logs
         self.metadata = {"name": name, "user_id": user_id,
                          "lab_id": lab_id, "run_id": self.run_id, "org_id": org_id}
@@ -192,7 +193,7 @@ class Run():
             tp = int(time.time())
             json_struct = {"metadata": self.metadata, "timestamp":tp, "signal": sig, "reason": reason}
             for _ in range(3):
-                r = requests.post(self.conclude_remote_path, json=json_struct, headers={"Authorization": jwt.encode(
+                r = requests.post(self.abort_remote_path, json=json_struct, headers={"Authorization": jwt.encode(
                     {"whatever": "1"}, "79eb9467-8348-4b29-a997-7a9685e1a820")})
                 if r.status_code >= 400:
                     # something wrong
