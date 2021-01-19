@@ -6,6 +6,8 @@ import requests
 import warnings
 import jwt
 import time
+import traceback
+import signal
 import numpy as np
 from os import path, getpid
 
@@ -171,6 +173,44 @@ class Run():
     def __upload_model(self):
         pass
 
+    def __register_signal_handlers(self):
+        signal.signal(signal.SIGINT, self.__sigint_handler)
+        signal.signal(signal.SIGTERM, self.__sigterm_handler)
+
+    def __sigint_handler(self, signum, frame):
+        self.__abort_run("SIGINT", "[SIGINT]Terminated by system")
+        traceback.print_stack(f=frame)
+        raise RuntimeError("terminated by system")
+
+    def __sigterm_handler(self, signum, frame):
+        self.__abort_run("SIGTERM", "[SIGTERM]Terminated by user")
+        traceback.print_stack(f=frame)
+        raise KeyboardInterrupt("termniated by user")
+
+    def __abort_run(self, sig, reason):
+        if self.remote_path:
+            tp = int(time.time())
+            json_struct = {"metadata": self.metadata, "timestamp":tp, "signal": sig, "reason": reason}
+            for _ in range(3):
+                r = requests.post(self.conclude_remote_path, json=json_struct, headers={"Authorization": jwt.encode(
+                    {"whatever": "1"}, "79eb9467-8348-4b29-a997-7a9685e1a820")})
+                if r.status_code >= 400:
+                    # something wrong
+                    jb = ''
+                    try:
+                        jb = r.json()
+                    except:
+                        pass
+                    print("resp:", r)
+                    msg = "code: {}, resp.json: {}, resp.text: {}".format(
+                        r.status_code, jb, r.text)
+                    print(msg)
+                    warnings.warn(msg)
+                else:
+                    print("abort remote call succeed. resp:", r)
+        self.started = False
+        self.run_id = "aborted"
+
     def conclude(self, show_memoize=True):
         if not self.started:
             pass
@@ -204,7 +244,7 @@ class Run():
                 else:
                     print("conclude remote call succeed. resp:", r)
         self.started = False
-        self.run_id = "aborted"
+        self.run_id = "concluded"
 
 
 if __name__ == "__main__":
@@ -224,7 +264,7 @@ if __name__ == "__main__":
             if "min_cpu" not in memoize_buf:
                 memoize_buf["min_cpu"] = val["cpu"]
 
-    r = Run("fucker", "testuser123", "proj123", "job123", flush_interval_seconds=5,
+    r = Run("test88", "testuser123", "proj123", "job123", flush_interval_seconds=5,
             local_path="/Users/mk/heyw/github/mwutils/mwutils", sys_stat_sample_interval=5, sys_stat_sample_size=21, buffer_all_logs=True)
     r.init_ml()
     r.add_memoize_funcs_to_logger(
