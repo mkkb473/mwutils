@@ -135,6 +135,7 @@ class Run():
         if self.started:
             return
         self.started = True
+        self.__register_signal_handlers()
         for _, logger in self._loggers.items():
             logger.start()
         for _, clogger in self.custom_loggers.items():
