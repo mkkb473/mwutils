@@ -1,6 +1,6 @@
 ## Introduction
 
-**mwutils** is a package developed to be used in the (ModelWhale)[https://modelwhale.com/] platform for machine learning experiments tracking. It is now under active development.
+**mwutils** is a package developed to be used in the [ModelWhale](https://modelwhale.com/) platform for machine learning experiments tracking. It is now under active development.
 
 At the mwutils supports *keras* and *PyTorch*
 mwutils has experimental support for *Tensorflow*
