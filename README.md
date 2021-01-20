@@ -1,13 +1,16 @@
-## 简介
+## Introduction
 
-mwuitls 是 ModelWhale 平台中进行训练监控的工具包
+**mwutils** is a package developed to be used in the (ModelWhale)[https://modelwhale.com/] platform for machine learning experiments tracking. It is now under active development.
+
+At the mwutils supports *keras* and *PyTorch*
+mwutils has experimental support for *Tensorflow*
 
 
-## 使用方法
+## Usage
 
 class Run:
 methods:
-- __init__(self, name="lab_run", user_id="user1", lab_id="lab1", org_id="", 
+- __init__(self, name="lab_run", user_id="user1", lab_id="lab1", org_id="",
                  flush_interval_seconds=5,
                  sys_stat_sample_size=5, sys_stat_sample_interval=5, local_path='', write_logs_to_local=False,
                  remote_path='', buffer_all_logs=False):
