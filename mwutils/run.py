@@ -25,6 +25,7 @@ _BEST = "best"
 MODEL_TYPE_TF = "tf"
 MODEL_TYPE_KERAS = "keras"
 MODEL_TYPE_TORCH = "torch"
+MODEL_TYPE_CUSTOM = "custom"
 
 
 class MLLoger(Logger):
@@ -101,6 +102,7 @@ class Run():
         self.remote_path = remote_path
         self.abort_remote_path = remote_path + "/abort"
         self.buffer_all_logs = buffer_all_logs
+        self.model_path = ""
         self.metadata = {"name": name, "user_id": user_id,
                          "lab_id": lab_id, "run_id": self.run_id, "org_id": org_id}
         self.pid = None
@@ -163,14 +165,50 @@ class Run():
     def set_tf_model(self, model):
         self.model = model
         self.model_type = MODEL_TYPE_TF
+    
+    def _save_tf_model(self):
+        # SavedModel
+        # tf2
+        import tensorflow as tf        
+        model_path = "./saved_model"
+        tf.saved_model.save(self.model, model_path)
+        pass
 
     def set_keras_model(self, model):
         self.model = model
         self.model_type = MODEL_TYPE_KERAS
+    
+    def _save_keras_model(self):
+        # SavedModel
+        # tf2
+        import tensorflow as tf
+        model_path = "./saved_model"
+        tf.keras.models.save_model(self.model, model_path)
+        self.model_path = model_path
 
     def set_torch_model(self, model):
         self.model = model
         self.model_type = MODEL_TYPE_TORCH
+    
+    def _save_torch_model(self):
+        # torch version >= 1.6
+        import torch
+        model_path = "./saved_model"
+        torch.save(self.model, model_path)
+        self.model_path = model_path
+        pass
+
+    def set_custom_model(self, path):
+        self.model_type = MODEL_TYPE_CUSTOM
+        self.model_path = path
+
+    def _save_model(self):
+        if self.model_type == MODEL_TYPE_TORCH:
+            self._save_torch_model()
+        elif self.model_type == MODEL_TYPE_KERAS:
+            self._save_keras_model()
+        elif self.model_type == MODEL_TYPE_TF:
+            self._save_tf_model()
 
     def __upload_model(self):
         pass
@@ -214,7 +252,7 @@ class Run():
         self.started = False
         self.run_id = "aborted"
 
-    def conclude(self, show_memoize=True):
+    def conclude(self, show_memoize=True, upload_model=False):
         if not self.started:
             pass
         for _, logger in self._loggers.items():
@@ -225,6 +263,7 @@ class Run():
             clogger.cancel()
             if show_memoize and clogger.memoize:
                 print(clogger.name, clogger.memoize)
+        self._save_model()
 
         if self.remote_path:
             tp = int(time.time())
@@ -247,6 +286,8 @@ class Run():
                 else:
                     print("conclude remote call succeed. resp:", r)
                     break
+        if upload_model:
+            self.__upload_model()
         self.started = False
         self.run_id = "concluded"
 
