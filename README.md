@@ -43,7 +43,7 @@ methods:
 - add_memoize_funcs_to_logger:
   testing;
 
-### keras:
+### Keras:
 
 provide MWCustomCallback method
 
@@ -75,7 +75,7 @@ history = model.fit(X_train, y_train,
 r.conclude()
 ```
 
-### torch:
+### PyTorch:
 provide ```LoggerHook``` method
 
 **example**
