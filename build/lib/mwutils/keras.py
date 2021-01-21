@@ -8,6 +8,7 @@ LOGS_VAL = "val_"
 class MWCustomCallback(keras.callbacks.Callback):
     def set_run(self, run):
         self.run = run
+        self.test_epoch = 0
         run.init_ml()
         run.start_ml()
 
@@ -15,11 +16,7 @@ class MWCustomCallback(keras.callbacks.Callback):
         self.run.conclude()
 
     def on_test_batch_end(self, batch, logs=None):
-        loss = logs.get('loss')
-        acc = logs.get('acc')
-        acc = acc if acc else logs.get('accuracy')
-        self.run.log_ml(batch=batch, loss=loss,
-                        acc=acc, phase="test")
+        pass
 
     def on_epoch_end(self, epoch, logs=None):
         loss = logs.get('loss')
@@ -44,7 +41,12 @@ class MWCustomCallback(keras.callbacks.Callback):
         self.run.start_ml()
 
     def on_test_end(self, logs=None):
-        pass
+        self.test_epoch += 1
+        loss = logs.get('loss')
+        acc = logs.get('acc')
+        acc = acc if acc else logs.get('accuracy')
+        self.run.log_ml(epoch=self.test_epoch, loss=loss,
+                        acc=acc, phase="test")
         # self.run.conclude()
 
     def on_train_end(self, logs):
