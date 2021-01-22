@@ -166,11 +166,10 @@ class Run():
         self.model = model
         self.model_type = MODEL_TYPE_TF
     
-    def _save_tf_model(self):
+    def _save_tf_model(self, model_path):
         # SavedModel
         # tf2
         import tensorflow as tf        
-        model_path = "./saved_model"
         tf.saved_model.save(self.model, model_path)
         pass
 
@@ -178,11 +177,10 @@ class Run():
         self.model = model
         self.model_type = MODEL_TYPE_KERAS
     
-    def _save_keras_model(self):
+    def _save_keras_model(self, model_path):
         # SavedModel
         # tf2
         import tensorflow as tf
-        model_path = "./saved_model"
         tf.keras.models.save_model(self.model, model_path)
         self.model_path = model_path
 
@@ -190,10 +188,9 @@ class Run():
         self.model = model
         self.model_type = MODEL_TYPE_TORCH
     
-    def _save_torch_model(self):
+    def _save_torch_model(self, model_path):
         # torch version >= 1.6
         import torch
-        model_path = "./saved_model"
         torch.save(self.model, model_path)
         self.model_path = model_path
         pass
@@ -203,12 +200,13 @@ class Run():
         self.model_path = path
 
     def _save_model(self):
-        if self.model_type == MODEL_TYPE_TORCH:
-            self._save_torch_model()
-        elif self.model_type == MODEL_TYPE_KERAS:
-            self._save_keras_model()
-        elif self.model_type == MODEL_TYPE_TF:
-            self._save_tf_model()
+        if hasattr(self, "model_type"):
+            if self.model_type == MODEL_TYPE_TORCH:
+                self._save_torch_model()
+            elif self.model_type == MODEL_TYPE_KERAS:
+                self._save_keras_model()
+            elif self.model_type == MODEL_TYPE_TF:
+                self._save_tf_model()
 
     def __upload_model(self):
         pass
