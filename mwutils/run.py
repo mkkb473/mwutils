@@ -199,14 +199,14 @@ class Run():
         self.model_type = MODEL_TYPE_CUSTOM
         self.model_path = path
 
-    def _save_model(self):
+    def _save_model(self, model_path):
         if hasattr(self, "model_type"):
             if self.model_type == MODEL_TYPE_TORCH:
-                self._save_torch_model()
+                self._save_torch_model(model_path)
             elif self.model_type == MODEL_TYPE_KERAS:
-                self._save_keras_model()
+                self._save_keras_model(model_path)
             elif self.model_type == MODEL_TYPE_TF:
-                self._save_tf_model()
+                self._save_tf_model(model_path)
 
     def __upload_model(self):
         pass
@@ -250,7 +250,7 @@ class Run():
         self.started = False
         self.run_id = "aborted"
 
-    def conclude(self, show_memoize=True, upload_model=False):
+    def conclude(self, show_memoize=True, upload_model=False, model_path="./saved_model"):
         if not self.started:
             pass
         for _, logger in self._loggers.items():
@@ -261,7 +261,7 @@ class Run():
             clogger.cancel()
             if show_memoize and clogger.memoize:
                 print(clogger.name, clogger.memoize)
-        self._save_model()
+        self._save_model(model_path)
 
         if self.remote_path:
             tp = int(time.time())
