@@ -21,7 +21,7 @@ class LoggerHook(SessionRunHook):
         run.start_ml()
 
     def begin(self):
-        self._epch = -1
+        self._epoch = -1
 
     def before_run(self, run_context):
         self._epoch += 1
