@@ -1,5 +1,7 @@
 import time
 import tensorflow as tf
+import warnings
+
 if tf.__version__[0] == 1:
     SessionRunArgs = tf.train.SessionRunArgs
     SessionRunHook = tf.train.SessionRunHook
@@ -14,9 +16,12 @@ class LoggerHook(SessionRunHook):
     """Logs loss and runtime."""
 
     def set_run(self, run, loss, phase="train"):
+        warnings.warn("Native TF plugins are not supported yet.")
+        return
         self.run = run
         self.phase = phase
         self.loss = loss
+        self._epoch = -1
         run.init_ml()
         run.start_ml()
 
