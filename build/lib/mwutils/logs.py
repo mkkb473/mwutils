@@ -73,7 +73,7 @@ class Logger():
     # Logger for metrics
     def __init__(self, name, sample_time_interval_seconds=10, metadata={}, local_path="", post_addr="", buffer_all=False):
         self._logs_buf = []
-        self._sample_time_interval_seconds = sample_time_interval_seconds
+        self._sample_time_interval_seconds = max(sample_time_interval_seconds, 2)
         self.name = name
         self.metadata = metadata
         self.mutex = threading.Lock()
