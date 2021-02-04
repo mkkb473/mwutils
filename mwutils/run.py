@@ -31,7 +31,7 @@ MODEL_TYPE_CUSTOM = "custom"
 class MLLoger(Logger):
     def log(self, step=None, epoch=None, batch=None, loss=None, acc=None):
         val = dict()
-        val[_TIMESTAMP] = int(time.time()) 
+        val[_TIMESTAMP] = int(time.time())
         if step is not None:
             val[_STEP] = step + 1
         if epoch is not None:
@@ -81,7 +81,7 @@ class CustomLogger(Logger):
 class Run():
     def __init__(self, name="lab_run", user_id="user1", lab_id="lab1", org_id="", flush_interval_seconds=5,
                  sys_stat_sample_size=5, sys_stat_sample_interval=5, local_path='', write_logs_to_local=False,
-                 remote_path='', buffer_all_logs=False):
+                 remote_path='https://www.kesci.com/api/runs', buffer_all_logs=False):
         self._loggers = {}
         self.custom_loggers = {}
         env_user_id = os.getenv("KLAB_USER_ID")
@@ -165,18 +165,18 @@ class Run():
     def set_tf_model(self, model):
         self.model = model
         self.model_type = MODEL_TYPE_TF
-    
+
     def _save_tf_model(self, model_path):
         # SavedModel
         # tf2
-        import tensorflow as tf        
+        import tensorflow as tf
         tf.saved_model.save(self.model, model_path)
         pass
 
     def set_keras_model(self, model):
         self.model = model
         self.model_type = MODEL_TYPE_KERAS
-    
+
     def _save_keras_model(self, model_path):
         # SavedModel
         # tf2
@@ -187,7 +187,7 @@ class Run():
     def set_torch_model(self, model):
         self.model = model
         self.model_type = MODEL_TYPE_TORCH
-    
+
     def _save_torch_model(self, model_path):
         # torch version >= 1.6
         import torch
