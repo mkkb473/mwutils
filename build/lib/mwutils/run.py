@@ -80,7 +80,7 @@ class CustomLogger(Logger):
 
 class Run():
     def __init__(self, name="lab_run", user_id="user1", lab_id="lab1", org_id="", flush_interval_seconds=5,
-                 sys_stat_sample_size=5, sys_stat_sample_interval=5, local_path='', write_logs_to_local=False,
+                 sys_stat_sample_size=1, sys_stat_sample_interval=2, local_path='', write_logs_to_local=False,
                  remote_path='https://www.kesci.com/api/runs', buffer_all_logs=False):
         self._loggers = {}
         self.custom_loggers = {}

@@ -72,12 +72,12 @@ class SystemStats(object):
     @property
     def sample_rate_seconds(self):
         """Sample system stats every this many seconds, min is 3"""
-        return max(3, self.run._sys_stat_sample_interval_seconds)
+        return max(2, self.run._sys_stat_sample_interval_seconds)
 
     @property
     def samples_to_average(self):
         """The number of samples to average before pushing, defaults to 15 valid range (2:30)"""
-        return min(30, max(2, self.run._sys_stat_sample_size))
+        return min(30, max(1, int(self.run._sys_stat_sample_size)))
 
     def _thread_body(self):
         while True:
