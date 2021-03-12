@@ -23,7 +23,7 @@ class MWCustomCallback(keras.callbacks.Callback):
         acc = logs.get('acc')
         acc = acc if acc else logs.get('accuracy')
         self.run.log_ml(epoch=epoch, loss=loss,
-                        acc=acc, phase="train")
+                        acc=acc, phase="train", custom_logs=logs)
         self._log_val_if_exists(epoch, logs=logs)
 
     def _log_val_if_exists(self, epoch, logs=None):
@@ -32,7 +32,7 @@ class MWCustomCallback(keras.callbacks.Callback):
         acc = acc if acc else logs.get(LOGS_VAL+'accuracy')
         if loss and acc:
             self.run.log_ml(epoch=epoch, loss=loss,
-                            acc=acc, phase="val")
+                            acc=acc, phase="val", custom_logs=logs)
 
     # def on_train_begin(self, logs):
 

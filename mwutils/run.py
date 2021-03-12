@@ -27,9 +27,10 @@ MODEL_TYPE_KERAS = "keras"
 MODEL_TYPE_TORCH = "torch"
 MODEL_TYPE_CUSTOM = "custom"
 
+run_names = {}
 
 class MLLoger(Logger):
-    def log(self, step=None, epoch=None, batch=None, loss=None, acc=None):
+    def log(self, step=None, epoch=None, batch=None, loss=None, acc=None, custom_logs=None):
         val = dict()
         val[_TIMESTAMP] = int(time.time())
         if step is not None:
@@ -64,6 +65,11 @@ class MLLoger(Logger):
                     self.memoize["{}_{}".format(_BEST, _EPOCH)] = epoch+1
                 elif batch is not None:
                     self.memoize["{}_{}".format(_BEST, _BATCH)] = batch+1
+            if custom_logs:
+                if isinstance(custom_logs, dict):
+                    for k, v in custom_logs.items():
+                        if k not in ['loss', 'acc']:
+                            val[k] = v
 
         super().log(val)
 
@@ -82,6 +88,10 @@ class Run():
     def __init__(self, name="lab_run", user_id="user1", lab_id="lab1", org_id="", flush_interval_seconds=5,
                  sys_stat_sample_size=1, sys_stat_sample_interval=2, local_path='', write_logs_to_local=False,
                  remote_path='https://www.kesci.com/api/runs', buffer_all_logs=False):
+        if name in run_names:
+            s = "name {} is already used in current session.".format(name)
+            raise Exception(s)
+        run_names[name] = self
         self._loggers = {}
         self.custom_loggers = {}
         env_user_id = os.getenv("KLAB_USER_ID")
@@ -91,6 +101,9 @@ class Run():
         self.user_id = env_user_id if env_user_id else user_id
         self.lab_id = env_lab_id if env_lab_id else lab_id
         self.org_id = env_org_id if env_org_id else org_id
+        if not (user_id and lab_id and org_id):
+            s = "At least one of required fields is empty:\nuser_id: {}\norg_id: {}\nlab_id: {}\n".format(user_id, org_id, lab_id)
+            raise Exception(s)
         self.run_id = name + '_' + timestr
         self.flush_interval_seconds = max(5, flush_interval_seconds)
         self._sys_stat_sample_size = sys_stat_sample_size
@@ -145,14 +158,14 @@ class Run():
         self.sys_stat = SystemStats(self)
         self.sys_stat.start()
 
-    def log_ml(self, step=None, epoch=None, batch=None, loss=None, acc=None, phase="train"):
+    def log_ml(self, step=None, epoch=None, batch=None, loss=None, acc=None, phase="train", custom_logs=None):
         # phase is the same thing with namea
         if isinstance(loss, np.float32):
             loss = float(loss)
         if isinstance(acc, np.float32):
             acc = float(acc)
         self._loggers[phase].log(step=step, epoch=epoch,
-                                  batch=batch, loss=loss, acc=acc)
+                                  batch=batch, loss=loss, acc=acc, custom_logs=None)
 
     def new_custom_logger(self, name, local_path=''):
         self.custom_loggers[name] = CustomLogger(name, sample_time_interval_seconds=self.flush_interval_seconds,
