@@ -165,7 +165,7 @@ class Run():
         if isinstance(acc, np.float32):
             acc = float(acc)
         self._loggers[phase].log(step=step, epoch=epoch,
-                                  batch=batch, loss=loss, acc=acc, custom_logs=None)
+                                  batch=batch, loss=loss, acc=acc, custom_logs=custom_logs)
 
     def new_custom_logger(self, name, local_path=''):
         self.custom_loggers[name] = CustomLogger(name, sample_time_interval_seconds=self.flush_interval_seconds,
