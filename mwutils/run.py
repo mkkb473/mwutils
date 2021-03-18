@@ -65,11 +65,11 @@ class MLLoger(Logger):
                     self.memoize["{}_{}".format(_BEST, _EPOCH)] = epoch+1
                 elif batch is not None:
                     self.memoize["{}_{}".format(_BEST, _BATCH)] = batch+1
-            if custom_logs:
-                if isinstance(custom_logs, dict):
-                    for k, v in custom_logs.items():
-                        if k not in ['loss', 'acc']:
-                            val[k] = v
+        if custom_logs:
+            if isinstance(custom_logs, dict):
+                for k, v in custom_logs.items():
+                    if k not in ['loss', 'acc', 'accuracy']:
+                        val[k] = v
 
         super().log(val)
 
