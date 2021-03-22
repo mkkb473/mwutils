@@ -69,8 +69,10 @@ class MLLoger(Logger):
             if isinstance(custom_logs, dict):
                 for k, v in custom_logs.items():
                     if k not in ['loss', 'acc', 'accuracy']:
-                        if k not in self.metadata['custom_keys']:
-                            self.metadata['custom_keys'].append(k)
+                        if 'custom_keys' not in self.metadata['annotations']:
+                            self.metadata['annotations']['custom_keys'] = {}
+                        if k not in self.metadata['annotations']['custom_keys']:
+                            self.metadata['annotations']['custom_keys'].append(k)
                         val[k] = v
 
         super().log(val)
@@ -119,7 +121,7 @@ class Run():
         self.buffer_all_logs = buffer_all_logs
         self.model_path = ""
         self.metadata = {"name": name, "user_id": user_id,
-                         "lab_id": lab_id, "run_id": self.run_id, "org_id": org_id, "custom_keys": []}
+                         "lab_id": lab_id, "run_id": self.run_id, "org_id": org_id, "annotations": {"custom_keys": {}}}
         self.pid = None
         self.started = False
 
