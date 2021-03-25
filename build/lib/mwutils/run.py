@@ -74,7 +74,9 @@ class MLLoger(Logger):
                         if k not in self.metadata['annotations']['custom_keys']:
                             self.metadata['annotations']['custom_keys'].append(k)
                         val[k] = v
-
+        for k, _ in val.items():
+            if k not in self.metadata['annotations']['keys']:
+                self.metadata['annotations']['keys'].append(k)
         super().log(val)
 
 
@@ -121,7 +123,7 @@ class Run():
         self.buffer_all_logs = buffer_all_logs
         self.model_path = ""
         self.metadata = {"name": name, "user_id": user_id,
-                         "lab_id": lab_id, "run_id": self.run_id, "org_id": org_id, "annotations": {"custom_keys": []}}
+                         "lab_id": lab_id, "run_id": self.run_id, "org_id": org_id, "annotations": {"custom_keys": [], "keys": []}}
         self.pid = None
         self.started = False
 
