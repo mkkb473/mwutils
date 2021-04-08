@@ -27,7 +27,7 @@ def append_logs_buf_to_remote(logs_buf, name, metadata, post_addr):
     # try 3 times
     for _ in range(3):
         r = requests.post(post_addr, json=json_struct, headers={"Authorization": jwt.encode(
-            {"whatever": "1"}, "79eb9467-8348-4b29-a997-7a9685e1a820")})
+            {"whatever": "1"}, "857851b2-c28c-4d94-83c8-f607b50ccd03")})
         if r.status_code >= 400:
             # something wrong
             jb = ''
